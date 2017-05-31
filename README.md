@@ -5,8 +5,10 @@ Instruções do teste
  
 **Problema:** detectar círculos com diâmetro superior a 10 pixels.
  
-**Solução:** utilizar a Transformada de Hough para círculos e verificar se o diâmetro dos círculos obtidos é maior que 10 pixels. 
-Ao final do processamento, exibir as imagens lado a lado.
+**Solução:** 
+- Aplicar filtros para remoção de ruídos, como abertura e fechamento, para eliminar elementos que confundam-se com círculos.
+- Utilizar a Transformada de Hough para círculos e verificar se o diâmetro dos círculos obtidos é maior que 10 pixels. 
+- Ao final do processamento, exibir as imagens lado a lado.
  
 As imagens de teste estão disponíveis na pasta `imagens`.
 
