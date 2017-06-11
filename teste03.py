@@ -11,6 +11,22 @@ import argparse, sys, os.path
 import numpy as np
 import cv2
 
+def HoughLines(image_file):
+    lines = cv2.HoughLinesP(image=image_file,
+                            # rho=1,
+                            # theta=np.pi/180,
+                            # threshold=15,
+                            # #lines=np.array([]),
+                            # minLineLength=30,
+                            # maxLineGap=1)
+                            rho=1,
+                            theta=np.pi/180,
+                            threshold=15,
+                            #lines=np.array([]),
+                            minLineLength=30,
+                            maxLineGap=1)
+    return lines
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--imagem", required = True, help = "path/image_name")
 args = vars(ap.parse_args())
@@ -49,19 +65,26 @@ cv2.imshow('open', opening)
 edges = cv2.Canny(opening, 100, 200, apertureSize = 3)
 cv2.imshow('edges', edges)
 
-#lines = cv2.HoughLinesP(edges, 1, np.pi/180, 15, 100, 2)
+# lines = cv2.HoughLinesP(image=edges,
+#                         # rho=1,
+#                         # theta=np.pi/180,
+#                         # threshold=15,
+#                         # #lines=np.array([]),
+#                         # minLineLength=30,
+#                         # maxLineGap=1)
+#                         rho=1,
+#                         theta=np.pi/180,
+#                         threshold=15,
+#                         #lines=np.array([]),
+#                         minLineLength=30,
+#                         maxLineGap=1)
 
-lines = cv2.HoughLinesP(image=edges,
-                        rho=1,
-                        theta=np.pi/180,
-                        threshold=15,
-                        #lines=np.array([]),
-                        minLineLength=30,
-                        maxLineGap=1)
-if lines is not None:
-#     print "Não existem retas"
+lines = HoughLines(edges)
+
+if lines is None:
+    print "Retas não encontradas"
 #     sys.exit()
-# else:
+else:
     print lines
     for x in range(0, len(lines)):
         for x1,y1,x2,y2 in lines[x]:
@@ -99,19 +122,34 @@ circles = cv2.HoughCircles(opening, cv2.cv.CV_HOUGH_GRADIENT,
               # minRadius=0,
               # maxRadius=0)
 
+if circles is None:
+    print "Circulos não encontrados"
+    sys.exit()
+
 for i in circles[0,:]:
     if 2*i[2] > 10: maior_que_10 = u">"
     else: maior_que_10 = u"≤"
     print(u"Círculo em (%d,%d) com diâmetro %d %s 10" % (i[0],i[1],2*i[2],maior_que_10))
 
-
 circles = np.uint16(np.around(circles))
-for i in circles[0,:]:
-    cv2.circle(output,(i[0],i[1]),i[2],(0,255,0),2)
-    cv2.circle(output,(i[0],i[1]),2,(0,0,255),3)
 
-#cv2.imshow('circles', output)
-cv2.imshow('input - output', np.hstack([image, output]))
+for i in circles[0,:]:
+    x = i[0]
+    y = i[1]
+    r = i[2]
+    # crop = edges[y-r-5:y+r+10,x-r-5:x+r+10] # Not exactly but doesn't matter
+    # cv2.imshow('', crop)
+
+for i in circles[0,:]:
+    x = i[0]
+    y = i[1]
+    r = i[2]
+    cv2.circle(output,(x,y),r,(0,255,0),2)
+    cv2.circle(output,(x,y),2,(0,0,255),3)
+
+cv2.imshow('circles', output)
+#cv2.imshow('input - output', np.hstack([image, output]))
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
