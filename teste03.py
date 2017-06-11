@@ -7,7 +7,7 @@
 #     círculos com diâmetros maiores ou ainda com outras
 #     formas silimares (polígonos com muitos lados)
 
-import argparse, sys
+import argparse, sys, os.path
 import numpy as np
 import cv2
 
@@ -15,7 +15,12 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--imagem", required = True, help = "path/image_name")
 args = vars(ap.parse_args())
 
-image = cv2.imread(args["imagem"])
+img_file = args["imagem"]
+if not os.path.isfile(img_file):
+    print "[" + img_file + "] não é erquivo!"
+    sys.exit()
+
+image = cv2.imread(img_file)
 cv2.imshow("image", image)
 
 output = image.copy()
@@ -40,8 +45,30 @@ cv2.imshow('open', opening)
 # closing = cv2.morphologyEx(im_bw, cv2.MORPH_CLOSE, kernel)
 # cv2.imshow('close', closing)
 
-# cv2.waitKey(0)
-# sys.exit()
+
+edges = cv2.Canny(opening, 100, 200, apertureSize = 3)
+cv2.imshow('edges', edges)
+
+#lines = cv2.HoughLinesP(edges, 1, np.pi/180, 15, 100, 2)
+
+lines = cv2.HoughLinesP(image=edges,
+                        rho=1,
+                        theta=np.pi/180,
+                        threshold=15,
+                        #lines=np.array([]),
+                        minLineLength=30,
+                        maxLineGap=1)
+if lines is not None:
+#     print "Não existem retas"
+#     sys.exit()
+# else:
+    print lines
+    for x in range(0, len(lines)):
+        for x1,y1,x2,y2 in lines[x]:
+            cv2.line(output, (x1,y1), (x2,y2), (255,0,0), 2)
+
+#cv2.imshow('hough', output)
+#cv2.waitKey(0)
 
 circles = cv2.HoughCircles(opening, cv2.cv.CV_HOUGH_GRADIENT,
 #               dp=10,            # accum_res / img_res
