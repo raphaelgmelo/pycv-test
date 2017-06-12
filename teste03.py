@@ -1,11 +1,16 @@
 # coding=utf-8
 # Notas:
-#   Como a transformada Hough é muito espeífica e não robusta
-#   O ajuste dospaâmetros é muito sensível para uso geral
+#   Como a transformada Hough é muito específica e não robusta
+#   O ajuste dos parâmetros é muito sensível para uso geral
 #   Não há resolução suficiente para Hough determinar circulos
-#     pequenos com certezasm afetar grandemente para
+#     pequenos com certeza sem afetar grandemente para
 #     círculos com diâmetros maiores ou ainda com outras
 #     formas silimares (polígonos com muitos lados)
+
+# see evironmenta data:  env.txt
+# see output images:     <imagefilename>-o.png
+# result data:           output.txt
+# run program for:       original + outuput (side byside)
 
 import argparse, sys, os.path
 import numpy as np
@@ -28,12 +33,12 @@ def HoughLines(_image):
     return lines
 
 def HoughCircles(image,
-                 _dp,        # accum_res / img_res
-                 _minDist,   # minimun center distance
-                 _param1,    # gradient
-                 _param2,    # accumulator
-                 _minRadius,
-                 _maxRadius):
+                 _dp,        # delta center             # 1-10
+                 _minDist,   # minimun center distance  #
+                 _param1,    # gradient                 # 30-150
+                 _param2,    # accumulator              # 10-180
+                 _minRadius,                            # 3
+                 _maxRadius):                           # 115
     circles = cv2.HoughCircles(image, cv2.cv.CV_HOUGH_GRADIENT,
                                dp=_dp,
                                minDist=_minDist,
@@ -41,42 +46,45 @@ def HoughCircles(image,
                                param2=_param2,
                                minRadius=_minRadius,
                                maxRadius=_maxRadius)
-
-    # circles more than 20
-    # dp=10,            # accum_res / img_res
-    # minDist=120,      #
-    # param1=100,       # gradient
-    # param2=180,       # accumulator
-    # minRadius=5,
-    # maxRadius=115)
-
-        # # circles until diameter
-        # dp=1.2,           # accum_res / img_res / centro
-        # minDist=40,       #
-        # param1=30,        # gradient
-        # param2=10,        # accumulator
-        # minRadius=3,
-        # maxRadius=6)
-
-              # dp=2,            # accum_res / img_res
-              # minDist=150,     #
-              # param1=30,       # gradient
-              # param2=15,       # accumulator
-              # minRadius=0,
-              # maxRadius=0)
     return circles
+
+def find_circles(circles, edges, output):
+    if circles is None:
+        None
+        # print "Circulos não encontrados"
+        # sys.exit()
+        return None
+
+    circles = np.uint16(np.around(circles))
+    #print circles
+
+    for i in circles[0,:]:
+        x = i[0]
+        y = i[1]
+        r = i[2]
+        crop = edges[y-r:y+r,x-r:x+r] # Not exactly but doesn't matter
+        lines = HoughLines(crop)
+        if lines is None:
+            cv2.circle(output,(x,y),r,(255,0,255),2)
+            if 2*i[2] >= 10: maior_que_10 = u"≥"
+            else: maior_que_10 = u"<"
+            print(u"Círculo em (%d,%d) com diâmetro %d %s 10" % (i[0],i[1],2*i[2],maior_que_10))
+
+####################
+#   program main   #
+####################
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--imagem", required = True, help = "path/image_name")
 args = vars(ap.parse_args())
 
-img_file = args["imagem"]
-if not os.path.isfile(img_file):
-    print "[" + img_file + "] não é erquivo!"
+filename = args["imagem"]
+if not os.path.isfile(filename):
+    print "[" + filename + "] não é erquivo!"
     sys.exit()
 
-image = cv2.imread(img_file)
-cv2.imshow("image", image)
+image = cv2.imread(filename)
+#cv2.imshow("image", image)
 
 output = image.copy()
 
@@ -84,7 +92,7 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 #cv2.imshow("gray", gray)
 
 (thresh, im_bw) = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-cv2.imshow('bw', im_bw)
+#cv2.imshow('bw', im_bw)
 
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(10,10))
 
@@ -116,94 +124,35 @@ else:
         for x1,y1,x2,y2 in lines[x]:
             cv2.line(output, (x1,y1), (x2,y2), (255,0,0), 2)
 
-#cv2.imshow('hough', output)
+#cv2.imshow('lines', output)
 #cv2.waitKey(0)
 
-# circles = cv2.HoughCircles(opening, cv2.cv.CV_HOUGH_GRADIENT,
-#                         # dp=10,            # accum_res / img_res
-#                         # minDist=120,      #
-#                         # param1=100-400,   # gradient
-#                         # param2=180-220,   # accumulator
-#                         # minRadius=5,
-#                         # maxRadius=115)
-
-    # circles more than 20
-    # dp=10,            # accum_res / img_res
-    # minDist=120,      #
-    # param1=100,       # gradient
-    # param2=180,       # accumulator
-    # minRadius=5,
-    # maxRadius=115)
-
-        # # circles until diameter
-        # dp=1.2,           # accum_res / img_res / centro
-        # minDist=40,       #
-        # param1=30,        # gradient
-        # param2=10,        # accumulator
-        # minRadius=3,
-        # maxRadius=6)
-
-              # dp=2,            # accum_res / img_res
-              # minDist=150,     #
-              # param1=30,       # gradient
-              # param2=15,       # accumulator
-              # minRadius=0,
-              # maxRadius=0)
-
+# circles with diameter up to 20
 circles = HoughCircles(opening,
-#                         # dp=10,            # accum_res / img_res
-#                         # minDist=120,      #
-#                         # param1=100-400,   # gradient
-#                         # param2=180-220,   # accumulator
-#                         # minRadius=5,
-#                         # maxRadius=115)
+                       1.2,     # delta center
+                       40,      # min distance
+                       30,      # gradient
+                       10,      # accumulator
+                       4,       # min radio
+                       6)      # max radio
+find_circles(circles, edges, output)
 
-    # circles more than 20
-    # dp=10,            # accum_res / img_res
-    # minDist=120,      #
-    # param1=100,       # gradient
-    # param2=180,       # accumulator
-    # minRadius=5,
-    # maxRadius=115)
+# circles with diameter more than 20
+circles = HoughCircles(opening,
+                       10,      # delta center
+                       120,      # min distance
+                       100,     # gradient
+                       180,     # accumulator
+                       5,      # min radio
+                       115)     # max radio
+find_circles(circles, edges, output)
 
-        # # circles until diameter 20
-        1.2,           # accum_res / img_res / centro
-        40,       #
-        30,        # gradient
-        10,        # accumulator
-        3,
-        6)
+ofilename = filename
+ofilename = os.path.splitext(filename)[0]+'-o.png'
+cv2.imwrite(ofilename, output)
 
-              # dp=2,            # accum_res / img_res
-              # minDist=150,     #
-              # param1=30,       # gradient
-              # param2=15,       # accumulator
-              # minRadius=0,
-              # maxRadius=0)
-
-
-if circles is None:
-    print "Circulos não encontrados"
-    sys.exit()
-
-circles = np.uint16(np.around(circles))
-#print circles
-
-for i in circles[0,:]:
-    x = i[0]
-    y = i[1]
-    r = i[2]
-#    crop = edges[y-r-2:y+r+2,x-r-2:x+r+2] # Not exactly but doesn't matter
-    crop = edges[y-r:y+r,x-r:x+r] # Not exactly but doesn't matter    lines = HoughLines(crop)
-    if lines is None:
-        cv2.circle(output,(x,y),r,(255,0,255),2)
-        #cv2.circle(output,(x,y),2,(0,0,255),3)
-        if 2*i[2] > 10: maior_que_10 = u">"
-        else: maior_que_10 = u"≤"
-        print(u"Círculo em (%d,%d) com diâmetro %d %s 10" % (i[0],i[1],2*i[2],maior_que_10))
-
-cv2.imshow('circles (green)', output)
-#cv2.imshow('input - output', np.hstack([image, output]))
+#cv2.imshow('circles (purple)', output)
+cv2.imshow('input - output', np.hstack([image, output]))
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

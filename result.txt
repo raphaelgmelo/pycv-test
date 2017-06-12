@@ -1,0 +1,13 @@
+AirBook py-cv-test> python teste03.py -i imagens/circles.png
+Círculo em (507,316) com diâmetro 10 ≥ 10
+Círculo em (229,199) com diâmetro 10 ≥ 10
+Círculo em (352,142) com diâmetro 10 ≥ 10
+Círculo em (355,431) com diâmetro 10 ≥ 10
+Círculo em (95,145) com diâmetro 78 ≥ 10
+Círculo em (175,345) com diâmetro 126 ≥ 10
+Círculo em (495,125) com diâmetro 162 ≥ 10
+
+AirBook py-cv-test> python teste03.py -i imagens/shapes_leo.jpg
+Círculo em (65,55) com diâmetro 106 ≥ 10
+
+AirBook py-cv-test>
