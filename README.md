@@ -1,4 +1,4 @@
-# Implementação para detecção de círculos em Python + OpenCV
+# Detecção de círculos em Python + OpenCV
 
 Procedimento
 -----
