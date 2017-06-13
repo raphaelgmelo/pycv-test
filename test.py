@@ -7,10 +7,12 @@
 #     círculos com diâmetros maiores ou ainda com outras
 #     formas silimares (polígonos com muitos lados)
 
-# see evironmenta data:  env.txt
-# see output images:     <imagefilename>-o.png
-# result data:           output.txt
-# run program for:       original + outuput (side byside)
+# evironmenta data:       env.txt
+# output images:          <imagefilename>-o.png
+# result data:            output.txt
+# run program for view:   original + outuput (side by side)
+
+# Tested in: osx 10.11.6, python 2.7, opencv 2.4
 
 import argparse, sys, os.path
 import numpy as np
@@ -72,7 +74,7 @@ args = vars(ap.parse_args())
 
 filename = args["imagem"]
 if not os.path.isfile(filename):
-    print "[" + filename + "] não é erquivo!"
+    print("[" + filename + "] não é erquivo!")
     sys.exit()
 
 image = cv2.imread(filename)
@@ -127,18 +129,18 @@ circles = HoughCircles(opening,
                        1.2,     # delta center
                        40,      # min distance
                        30,      # gradient
-                       10,      # accumulator
-                       4,       # min radio
+                       12,      # accumulator
+                       2,       # min radio
                        6)       # max radio
 find_circles(circles, edges, output)
 
-# circles with diameter more than 6
+# circles with diameter 12 or more
 circles = HoughCircles(opening,
                        10,      # delta center
                        120,     # min distance
                        100,     # gradient
                        180,     # accumulator
-                       5,       # min radio
+                       6,       # min radio
                        115)     # max radio
 find_circles(circles, edges, output)
 
