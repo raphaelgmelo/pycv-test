@@ -18,16 +18,9 @@ import cv2
 
 def HoughLines(_image):
     lines = cv2.HoughLinesP(image=_image,
-                            # rho=1,
-                            # theta=np.pi/180,
-                            # threshold=15,
-                            # #lines=np.array([]),
-                            # minLineLength=30,
-                            # maxLineGap=1)
                             rho=1,
                             theta=np.pi/180,
                             threshold=15,
-                            #lines=np.array([]),
                             minLineLength=30,
                             maxLineGap=1)
     return lines
@@ -51,7 +44,7 @@ def HoughCircles(image,
 def find_circles(circles, edges, output):
     if circles is None:
         None
-        # print "Circulos não encontrados"
+        # print u"Círculos não encontrados"
         # sys.exit()
         return None
 
@@ -66,8 +59,7 @@ def find_circles(circles, edges, output):
         lines = HoughLines(crop)
         if lines is None:
             cv2.circle(output,(x,y),r,(255,0,255),2)
-            if 2*i[2] >= 10: maior_que_10 = u"≥"
-            else: maior_que_10 = u"<"
+            maior_que_10 = u"≥" if 2*i[2] >= 10 else "<"
             print(u"Círculo em (%d,%d) com diâmetro %d %s 10" % (i[0],i[1],2*i[2],maior_que_10))
 
 ####################
@@ -90,6 +82,9 @@ output = image.copy()
 
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 #cv2.imshow("gray", gray)
+
+# blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+# cv2.imshow("blurred", blurred)
 
 (thresh, im_bw) = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 #cv2.imshow('bw', im_bw)
@@ -127,32 +122,32 @@ else:
 #cv2.imshow('lines', output)
 #cv2.waitKey(0)
 
-# circles with diameter up to 20
+# circles with diameter up to 12
 circles = HoughCircles(opening,
                        1.2,     # delta center
                        40,      # min distance
                        30,      # gradient
                        10,      # accumulator
                        4,       # min radio
-                       6)      # max radio
+                       6)       # max radio
 find_circles(circles, edges, output)
 
-# circles with diameter more than 20
+# circles with diameter more than 6
 circles = HoughCircles(opening,
                        10,      # delta center
-                       120,      # min distance
+                       120,     # min distance
                        100,     # gradient
                        180,     # accumulator
-                       5,      # min radio
+                       5,       # min radio
                        115)     # max radio
 find_circles(circles, edges, output)
 
 ofilename = filename
 ofilename = os.path.splitext(filename)[0]+'-o.png'
-cv2.imwrite(ofilename, output)
+#cv2.imwrite(ofilename, output)
 
-#cv2.imshow('circles (purple)', output)
-cv2.imshow('input - output', np.hstack([image, output]))
+cv2.imshow('circles (purple)', output)
+#cv2.imshow('input - output', np.hstack([image, output]))
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
