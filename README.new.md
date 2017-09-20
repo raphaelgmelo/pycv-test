@@ -19,6 +19,8 @@ Directory `images` contains two image files for test your solution.
 
 Use any version of Python and OpenCV (inform your versions if not 3.x).
 
+Should be a unique solution for both images
+
 Developing and submitting
 ---
 You must "clone" (fork is not recommend) this project into your own GitHub account.
@@ -33,6 +35,7 @@ Instruções do teste
 ---
 
 **Problema:**
+
 Detectar os círculos com diâmetro superior a 10 pixels.
 
 **Script e solução sugerida:**
