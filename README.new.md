@@ -15,11 +15,11 @@ Detect circles with diameter greater than 10 pixels.
 - Check if the diameter of the circles obtained is greater than 10 pixels.
 - Display original and solved images "side by side".
 
-`images` directory contains two image files for test your solution.
+Directory `images` contains two image files for test your solution.
 
 Use any version of Python and OpenCV (inform your versions if not 3.x).
 
-Developing and submitting**
+Developing and submitting
 ---
 You must "clone" (fork is not recommend) this project into your own GitHub account.
 Solve, develop and commit while in your own repository.
