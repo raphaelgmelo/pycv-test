@@ -12,7 +12,7 @@
 # result data:            output.txt
 # run program for view:   original + outuput (side by side)
 
-# Tested in: osx 10.11.6, python 2.7, opencv 2.4
+# Tested in: osx 10.11.6, python 3.6, opencv 3.3
 
 import argparse, sys, os.path
 import numpy as np
@@ -34,7 +34,7 @@ def HoughCircles(image,
                  _param2,    # accumulator              # 10-180
                  _minRadius,                            # 3
                  _maxRadius):                           # 115
-    circles = cv2.HoughCircles(image, cv2.cv.CV_HOUGH_GRADIENT,
+    circles = cv2.HoughCircles(image, cv2.HOUGH_GRADIENT,
                                dp=_dp,
                                minDist=_minDist,
                                param1=_param1,
@@ -83,13 +83,13 @@ image = cv2.imread(filename)
 output = image.copy()
 
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#cv2.imshow("gray", gray)
+cv2.imshow("gray", gray)
 
 # blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 # cv2.imshow("blurred", blurred)
 
 (thresh, im_bw) = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-#cv2.imshow('bw', im_bw)
+cv2.imshow('bw', im_bw)
 
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(10,10))
 
@@ -121,7 +121,7 @@ else:
         for x1,y1,x2,y2 in lines[x]:
             cv2.line(output, (x1,y1), (x2,y2), (255,0,0), 2)
 
-#cv2.imshow('lines', output)
+cv2.imshow('lines', output)
 #cv2.waitKey(0)
 
 # circles with diameter up to 12
